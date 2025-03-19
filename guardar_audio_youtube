@@ -1,0 +1,25 @@
+# Instalar yt-dlp (para descargar audio de YouTube)
+!pip install -q yt-dlp
+
+# Importar yt-dlp
+import yt_dlp
+
+def download_audio(youtube_url, output_filename="audio.mp3"):
+    """Descarga el mejor audio disponible en MP3 desde un video de YouTube."""
+    ydl_opts = {
+        'format': 'bestaudio',  # Descargar el mejor audio disponible
+        'extract_audio': True,  # Extraer solo el audio
+        'audio_format': 'mp3',  # Convertir a MP3
+        'outtmpl': output_filename  # Nombre del archivo de salida
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([youtube_url])
+
+    print(f"✅ Audio guardado como {output_filename}")
+
+# URL del video (reemplázala si quieres otro video)
+youtube_url = "https://youtu.be/ySbtLAImx4M"
+
+# Descargar el audio
+download_audio(youtube_url)
