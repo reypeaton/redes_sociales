@@ -1,0 +1,49 @@
+# Instalar yt-dlp y ffmpeg (solo necesario en Google Colab)
+!pip install -q yt-dlp
+!apt-get install -y ffmpeg
+
+# Importar librerías necesarias
+import yt_dlp
+import subprocess
+import os
+
+def download_and_trim_video(youtube_url, start_time="00:00:00", output_filename="output_video.mp4"):
+    """
+    Descarga el mejor video con audio disponible y lo recorta desde el tiempo especificado.
+
+    Parámetros:
+    - youtube_url (str): URL del video de YouTube.
+    - start_time (str): Tiempo de inicio en formato "hh:mm:ss" (por defecto "00:00:00").
+    - output_filename (str): Nombre del archivo de salida (por defecto "output_video.mp4").
+    """
+
+    # Descargar el mejor video + mejor audio disponible
+    ydl_opts = {
+        'format': 'bv+ba/best',  # Descarga el mejor video con audio disponible
+        'outtmpl': 'downloaded_video.mp4',  # Nombre temporal del video
+        'merge_output_format': 'mp4'  # Asegurar salida en MP4
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([youtube_url])
+
+    # Recortar el video con ffmpeg (o dejarlo completo si start_time es "00:00:00")
+    command = [
+        'ffmpeg', '-y', '-i', 'downloaded_video.mp4',
+        '-ss', start_time, '-c', 'copy', output_filename
+    ]
+    subprocess.run(command, check=True)
+
+    # Eliminar el archivo original
+    os.remove('downloaded_video.mp4')
+
+    print(f"✅ Video guardado como {output_filename}")
+
+# URL del video de ejemplo (puedes cambiarla por otra)
+youtube_url = "https://youtu.be/ySbtLAImx4M"
+
+# Tiempo de inicio (por defecto desde 0:00:00, pero se puede modificar)
+start_time = "00:00:00"  # Cambia esto si necesitas otro punto de inicio
+
+# Descargar y recortar el video
+download_and_trim_video(youtube_url, start_time)
